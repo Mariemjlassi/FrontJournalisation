@@ -229,11 +229,11 @@
     align-items: center;
     justify-content: center;
     flex-shrink: 0;
-    color: white;
+    color: rgb(0, 0, 0);
   }
   
   .update-badge.formation {
-    background: #2ecc71;
+    background: #ddf3fe;
   }
   
   .update-badge.recrutement {
@@ -241,11 +241,11 @@
   }
   
   .update-badge.diplome {
-    background: #9b59b6;
+    background: #ffd9e2;
   }
   
   .update-badge.message {
-    background: #f39c12;
+    background: #feefd7;
   }
   
   .update-content p {

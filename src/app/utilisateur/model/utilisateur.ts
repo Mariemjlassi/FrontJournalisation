@@ -6,4 +6,6 @@ export interface Utilisateur {
   username: string;
   role: string;
   lastLogin: string | Date | null;
+  accountLocked: boolean;
+  
 }

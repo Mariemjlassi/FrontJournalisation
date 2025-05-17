@@ -61,7 +61,7 @@ export class ListDiplomeComponent implements OnInit {
   editDiplomeForm: FormGroup;
   addDiplomeVisible = false;
   editDiplomeVisible = false;
-  selectedTypeDiplomes: TypeDiplome[] = [];
+  
 
   constructor(
     private diplomeService: DiplomeService,
@@ -326,62 +326,6 @@ confirmDelete(id: number): void {
     }, 100);
   }
 
-  exportTypeDiplomes(): void {
-    if (this.selectedTypeDiplomes && this.selectedTypeDiplomes.length > 0) {
-        this.confirmationService.confirm({
-            message: `Voulez-vous exporter les ${this.selectedTypeDiplomes.length} types de diplômes sélectionnés ?`,
-            header: 'Confirmation export',
-            icon: 'pi pi-exclamation-triangle',
-            accept: () => {
-                const csvData = this.convertTypeDiplomesToCSV(this.selectedTypeDiplomes);
-                this.downloadCSV(csvData, 'types_diplomes_selectionnes');
-                this.messageService.add({
-                    severity: 'success',
-                    summary: 'Export réussi',
-                    detail: `${this.selectedTypeDiplomes.length} types de diplômes exportés`
-                });
-            }
-        });
-    } else {
-        this.confirmationService.confirm({
-            message: 'Aucun type de diplôme sélectionné. Voulez-vous exporter tous les types ?',
-            header: 'Confirmation export',
-            icon: 'pi pi-exclamation-triangle',
-            accept: () => {
-                const csvData = this.convertTypeDiplomesToCSV(this.typeDiplomes);
-                this.downloadCSV(csvData, 'types_diplomes');
-                this.messageService.add({
-                    severity: 'success',
-                    summary: 'Export réussi',
-                    detail: `${this.typeDiplomes.length} types de diplômes exportés`
-                });
-            }
-        });
-    }
-}
 
-private convertTypeDiplomesToCSV(typeDiplomes: TypeDiplome[]): string {
-    const headers = ['Référence', 'Intitulé du Type'];
-    const rows = typeDiplomes.map(type => [
-        `TYPE-${type.id}`,
-        type.libelleTypeDiplome
-    ]);
-    
-    return [headers.join(','), ...rows.map(row => row.join(','))].join('\n');
-}
-
-private downloadCSV(csvData: string, fileName: string): void {
-    const blob = new Blob([csvData], { type: 'text/csv;charset=utf-8;' });
-    const link = document.createElement('a');
-    const url = URL.createObjectURL(blob);
-    
-    link.setAttribute('href', url);
-    link.setAttribute('download', `${fileName}_${new Date().toISOString().slice(0,10)}.csv`);
-    link.style.visibility = 'hidden';
-    
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
-}
   
 }

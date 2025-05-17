@@ -31,14 +31,24 @@
 
                     <div class="input-group">
                         <span class="input-icon pi pi-lock"></span>
-                        <input type="password" pInputText id="password" formControlName="password" 
-                            placeholder="Mot de passe" autocomplete="off"
+                        <input [type]="showPassword ? 'text' : 'password'" pInputText id="password" 
+                            formControlName="password" placeholder="Mot de passe" autocomplete="off"
                             pTooltip="Saisissez votre mot de passe" tooltipPosition="top" />
                         <span class="password-toggle pi pi-eye" (click)="togglePasswordVisibility()"></span>
                     </div>
                     <span *ngIf="loginForm.controls['password'].invalid && loginForm.controls['password'].touched" class="error-message">
                         *Mot de passe requis
                     </span>
+
+                    <!-- Message d'erreur pour les tentatives restantes -->
+                    <div *ngIf="remainingAttempts !== null" class="attempts-warning">
+                        Tentatives restantes : {{ remainingAttempts }}
+                    </div>
+
+                    <!-- Message pour compte verrouillé -->
+                    <div *ngIf="accountLocked" class="account-locked">
+                        Votre compte est temporairement verrouillé. Veuillez réessayer dans 30 minutes ou contacter l'administrateur.
+                    </div>
 
                     <div class="form-options">
                         <a href="/forgot-password" class="forgot-password">
@@ -51,7 +61,7 @@
                         (resolved)="onCaptchaResolved($event!)">
                     </re-captcha>
 
-                    <button  type="submit" [disabled]="loginForm.invalid" 
+                    <button type="submit" [disabled]="loginForm.invalid || accountLocked" 
                         class="login-button animate__animated animate__fadeInUp animate__delay-2s">
                         <span class="button-label">Se connecter</span>
                         <span class="button-icon pi pi-arrow-right"></span>
@@ -69,8 +79,6 @@
                         <img src="/assets/images/login1.png" alt="Illustration connexion" 
                             class="animate__animated animate__zoomIn animate__delay-1s">
                     </div>
-                    
-                    
                 </div>
             </div>
         </div>

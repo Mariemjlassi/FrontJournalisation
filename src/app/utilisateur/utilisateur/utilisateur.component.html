@@ -60,7 +60,7 @@
       <div class="card-background"></div>
       <div class="user-content">
         <div class="user-avatar">
-          <p-avatar [label]="utilisateur.nom[0] + utilisateur.prenom[0]" size="xlarge" shape="circle"></p-avatar>
+          <p-avatar [label]="utilisateur.nom[0] + utilisateur.prenom[0]" size="xlarge" shape="circle" ></p-avatar>
         </div>
 
         <div class="user-info">
@@ -88,6 +88,16 @@
           <button pButton icon="pi pi-key" class="p-button-rounded p-button-text p-button-plain"
             pTooltip="Réinitialiser MDP" tooltipPosition="top"
             (click)="resetPassword(utilisateur.id, utilisateur.nom)"></button>
+
+            <button pButton 
+    [icon]="utilisateur.accountLocked ? 'pi pi-lock' : 'pi pi-lock-open'"
+    [severity]="utilisateur.accountLocked ? 'danger' : 'success'"
+    class="p-button-rounded p-button-text p-button-raised" 
+    pTooltip="{{ utilisateur.accountLocked ? 'Déverrouiller le compte' : 'Verrouiller le compte' }}"
+    tooltipPosition="top" 
+    (click)="toggleLockState(utilisateur)"
+    *ngIf="utilisateur.role !== 'ADMIN'">
+  </button>
         </div>
       </div>
     </p-card>
@@ -110,7 +120,7 @@
         <tr>
           <td>
             <div class="user-cell">
-              <p-avatar [label]="utilisateur.nom[0] + utilisateur.prenom[0]" size="normal" shape="circle"></p-avatar>
+              <p-avatar [label]="utilisateur.nom[0] + utilisateur.prenom[0]" size="normal" shape="circle" [style]="{ 'background-color': 'rgba(235, 69, 95, 0.1)', color: '#EB455F' }"></p-avatar>
               <span>{{utilisateur.nom}} {{utilisateur.prenom}}</span>
             </div>
           </td>
@@ -183,7 +193,7 @@
     [style]="{width: '800px'}" [draggable]="false" [resizable]="false">
     <div *ngIf="selectedUser" class="user-details">
       <div class="details-header">
-        <p-avatar [label]="selectedUser.nom[0] + selectedUser.prenom[0]" size="xlarge" shape="circle"></p-avatar>
+        <p-avatar [label]="selectedUser.nom[0] + selectedUser.prenom[0]" size="xlarge" shape="circle" [style]="{ 'background-color': 'rgba(235, 69, 95, 0.1)', color: '#EB455F' }"></p-avatar>
         <div class="details-title">
           <h3>{{selectedUser.nom}} {{selectedUser.prenom}}</h3>
           <p-tag [severity]="getSeverity(selectedUser.role)" [value]="capitalizeFirstLetter(selectedUser.role)"></p-tag>

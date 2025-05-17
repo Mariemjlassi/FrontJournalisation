@@ -65,6 +65,32 @@
           <i class="pi pi-sitemap"></i> Les Directions
         </a>
       </li>
+
+            <!-- Section Communication -->
+            <h4>
+              <span>Communication</span>
+              <div class="menu-separator"></div>
+            </h4>
+            <li *ngIf="isRH() || isResponsable()">
+              <a href="/notifications">
+                <i class="pi pi-bell text-3xl" 
+                   pBadge 
+                   [value]="unreadNotificationsCount" 
+                   [severity]="'danger'"
+                   *ngIf="unreadNotificationsCount > 0"></i>
+                <i class="pi pi-bell text-3xl" *ngIf="unreadNotificationsCount === 0"></i>
+                Notifications
+              </a>
+            </li>
+            <li>
+              <a href="/messages" class="messagerie-item">
+                <i class="pi pi-inbox"></i>
+                Messagerie
+                <span *ngIf="unreadMessagesCount > 0" class="message-badge">
+                  {{ unreadMessagesCount }}
+                </span>
+              </a>
+            </li>
       
       <!-- Section Compétences -->
       <h4 *ngIf="isRH()">
@@ -73,12 +99,7 @@
       </h4>
       <li *ngIf="isRH()">
         <a href="/competences">
-          <i class="pi pi-star"></i> Compétences employés
-        </a>
-      </li>
-      <li *ngIf="isRH()">
-        <a href="/competences-poste">
-          <i class="pi pi-star-fill"></i> Compétences des postes
+          <i class="pi pi-star"></i> Compétences 
         </a>
       </li>
       
@@ -135,28 +156,7 @@
         </a>
       </li>
       
-      <!-- Section Communication -->
-      <h4>
-        <span>Communication</span>
-        <div class="menu-separator"></div>
-      </h4>
-      <li *ngIf="isRH() || isResponsable()">
-        <a href="/notifications">
-          <i class="pi pi-bell text-3xl" 
-             pBadge 
-             [value]="unreadNotificationsCount" 
-             [severity]="'danger'"
-             *ngIf="unreadNotificationsCount > 0"></i>
-          <i class="pi pi-bell text-3xl" *ngIf="unreadNotificationsCount === 0"></i>
-          Notifications
-        </a>
-      </li>
-      <li>
-        <a href="/messages" class="messagerie-item">
-          <i class="pi pi-inbox"></i>
-          Messagerie
-        </a>
-      </li>
+
       
       <!-- Section Compte -->
       <h4>

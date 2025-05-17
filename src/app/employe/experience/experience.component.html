@@ -68,10 +68,10 @@
                     <!-- Bouton "Voir plus" pour ASSAD -->
                     <div *ngIf="experiencesAssad.length > 5" class="see-more-container">
                         <p-button *ngIf="!showAllAssad" label="Voir plus d'expériences ({{experiencesAssad.length - 5}})" 
-                                  icon="pi pi-chevron-down" class="see-more-btn" 
-                                  (click)="showAllAssad = true" severity="help"></p-button>
+                                  icon="pi pi-chevron-down" class="p-button-text" 
+                                  (click)="showAllAssad = true" severity="secondary"></p-button>
                         <p-button *ngIf="showAllAssad" label="Voir moins" icon="pi pi-chevron-up" 
-                                  class="see-more-btn" severity="help" (click)="showAllAssad = false"></p-button>
+                                  class="p-button-text" severity="secondary" (click)="showAllAssad = false"></p-button>
                     </div>
                 </div>
             </div>

@@ -21,7 +21,8 @@ export class UtilisateurService {
       map(users =>
         users.map(user => ({
           ...user,
-          lastLogin: user.lastLogin ? new Date(user.lastLogin) : null 
+          lastLogin: user.lastLogin ? new Date(user.lastLogin) : null ,
+          accountLocked: user.accountLocked !== undefined ? user.accountLocked : false
         }))
       ) 
     );
@@ -46,6 +47,22 @@ export class UtilisateurService {
   getAllUsers(): Observable<Utilisateur[]> {
     return this.http.get<Utilisateur[]>(`${this.apiUrl}/all`);
   }
+
+  lockAccount(id: number): Observable<{message: string}> {
+  return this.http.post<{message: string}>(
+    `${this.apiUrl}/${id}/lock`, 
+    {}, 
+    { headers: this.headers }
+  );
+}
+
+unlockAccount(id: number): Observable<{message: string}> {
+  return this.http.post<{message: string}>(
+    `${this.apiUrl}/${id}/unlock`, 
+    {}, 
+    { headers: this.headers }
+  );
+}
   
   
 }

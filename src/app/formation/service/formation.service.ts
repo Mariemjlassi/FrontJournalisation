@@ -5,6 +5,7 @@ import { FormationDto } from '../model/FormationDto.model';
 import { PosteAvecDatesDTO } from '../../employe/model/PosteAvecDatesDTO';
 import { FormationDto_Resultat } from '../model/FormationDto_Resultat';
 import { ApiResponse } from '../model/ApiResponse';
+import { AuthService } from '../../auth/service/auth.service';
 
 @Injectable({
   providedIn: 'root'
@@ -12,11 +13,14 @@ import { ApiResponse } from '../model/ApiResponse';
 export class FormationService {
   private apiUrl = 'http://localhost:9090/formations';
   private apiUrll = 'http://localhost:9090/api/employes';
-  constructor(private http: HttpClient) { }
+  headers : any;
+      constructor(private http: HttpClient, private authservice: AuthService) {
+        this.headers = this.authservice.createAuthorizationHeader();
+      }
 
  // Modifier le type de retour pour Observable<number>
  creerFormation(formData: FormData): Observable<number> {
-  return this.http.post<number>(`${this.apiUrl}`, formData);
+  return this.http.post<number>(`${this.apiUrl}`, formData, {headers : this.headers});
 }
   getFormationsParRH(rhId: number): Observable<FormationDto[]> {
     return this.http.get<FormationDto[]>(`${this.apiUrl}/${rhId}`);

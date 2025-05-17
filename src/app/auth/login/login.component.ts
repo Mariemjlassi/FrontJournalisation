@@ -48,6 +48,8 @@ export class LoginComponent implements OnInit {
   loginForm!: FormGroup;
   recaptchaToken: string | null = null;
   showPassword: boolean = false;
+  remainingAttempts: number | null = null;
+  accountLocked: boolean = false;
   @ViewChild('recaptcha') recaptcha: RecaptchaComponent | undefined;
 
   constructor(
@@ -111,8 +113,8 @@ export class LoginComponent implements OnInit {
           } else if (this.authService.getUserRole() === 'RESPONSABLE') {
             this.router.navigate(['/home']);
             localStorage.setItem('RESPONSABLEID', response.utilisateurId);
-          }else{
-            this.router.navigate(['/home']);
+          }else if(this.authService.getUserRole() === 'ADMIN'){
+            this.router.navigate(['/dashboard']);
           }
 
           const userRole = this.authService.getUserRole();
@@ -125,18 +127,60 @@ export class LoginComponent implements OnInit {
             life: 3000
           });
 
-          setTimeout(() => {
-            this.router.navigate(['/home']);
-          }, 1000);
+          
         },
         (error) => {
           console.error('Login error:', error);
-          this.messageService.add({
-            severity: 'error',
-            summary: 'Erreur',
-            detail: 'Identifiant ou mot de passe incorrect',
-            life: 3000
-          });
+
+          this.remainingAttempts = null;
+          this.accountLocked = false;
+
+
+          if (error.error && typeof error.error === 'string') {
+            if (error.error.includes('Trop de tentatives')) {
+              this.accountLocked = true;
+              this.messageService.add({
+                severity: 'error',
+                summary: 'Compte verrouillé',
+                detail: error.error,
+                life: 5000
+              });
+            } else if (error.error.includes('Tentatives restantes')) {
+              const matches = error.error.match(/Tentatives restantes: (\d+)/);
+              if (matches && matches[1]) {
+                this.remainingAttempts = parseInt(matches[1], 10);
+              }
+              this.messageService.add({
+                severity: 'error',
+                summary: 'Erreur',
+                detail: error.error,
+                life: 5000
+              });
+            } else if (error.error.includes('Compte temporairement verrouillé')) {
+              this.accountLocked = true;
+              this.messageService.add({
+                severity: 'error',
+                summary: 'Compte verrouillé',
+                detail: error.error,
+                life: 5000
+              });
+            } else {
+              this.messageService.add({
+                severity: 'error',
+                summary: 'Erreur',
+                detail: 'Identifiant ou mot de passe incorrect',
+                life: 3000
+              });
+            }
+          } else {
+            this.messageService.add({
+              severity: 'error',
+              summary: 'Erreur',
+              detail: 'Identifiant ou mot de passe incorrect',
+              life: 3000
+            });
+          }
+          
           this.resetCaptcha();
         }
       );

@@ -5,6 +5,8 @@ import { AuthService } from '../auth/service/auth.service';
 import { CommonModule } from '@angular/common';
 import { NotificationService } from '../notification/service/notification.service';
 import { HttpClient } from '@angular/common/http';
+import { MessageService } from '../messagerie/service/message.service';
+import { MessageDto } from '../messagerie/model/message-dto';
 
 @Component({
   selector: 'app-sidebar',
@@ -19,6 +21,7 @@ export class SidebarComponent  implements OnInit{
   notifications: any[] = [];
   userDetails: any = {};
   unreadNotificationsCount: number = 0;
+  unreadMessagesCount : number = 0;
 
   
   private refreshInterval: any;
@@ -26,7 +29,8 @@ export class SidebarComponent  implements OnInit{
   constructor(
     private authService: AuthService, 
     private notificationService: NotificationService,
-    private http: HttpClient
+    private http: HttpClient,
+    private messageService: MessageService
   ) {}
 
   ngOnInit(): void {
@@ -35,6 +39,7 @@ export class SidebarComponent  implements OnInit{
     if (this.userId) {
       this.loadUserDetails(this.userId);
       this.loadUnreadNotifications();
+      this.loadUnreadMessagesCount();
       
       // Rafraîchir toutes les 30 secondes
       this.refreshInterval = setInterval(() => {
@@ -83,6 +88,19 @@ export class SidebarComponent  implements OnInit{
         },
         error: (error) => {
           console.error('Erreur lors du chargement des notifications:', error);
+        }
+      });
+    }
+  }
+
+  loadUnreadMessagesCount(): void {
+    if (this.userId) {
+      this.messageService.getRecus(this.userId).subscribe({
+        next: (messages: MessageDto[]) => {
+          this.unreadMessagesCount = messages.filter(msg => !msg.lu).length;
+        },
+        error: (error) => {
+          console.error('Erreur lors du chargement des messages non lus:', error);
         }
       });
     }

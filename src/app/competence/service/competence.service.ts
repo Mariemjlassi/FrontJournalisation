@@ -26,4 +26,8 @@ export class CompetenceService {
   delete(id: number): Observable<void> {
     return this.http.delete<void>(`${this.apiUrl}/${id}`);
   }
+  // Dans votre CompetenceService (ou un nouveau service si préférez)
+getEmployesWithCompetence(competenceId: number): Observable<any[]> {
+  return this.http.get<any[]>(`${this.apiUrl}/${competenceId}/employes`);
+}
 }

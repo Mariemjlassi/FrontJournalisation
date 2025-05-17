@@ -40,8 +40,9 @@ import { FormationEmployeComponent } from './employe/formation-employe/formation
 import { HomeComponent } from './home/home.component';
 import { CompetencesComponent } from './competence/competence/competence.component';
 import { EmployeCompetenceComponent } from './competence/employecompetence/employecompetence.component';
-import { CompetencePosteComponent } from './competence/competence-poste/competence-poste.component';
 import { PdfComponent } from './formation/pdf/pdf.component';
+import { ReportingComponent } from './reporting/reporting/reporting.component';
+import { DashboardComponent } from './dashboard/dashboard.component';
 
 export const routes: Routes = [
   { path: '', redirectTo: 'login', pathMatch: 'full' },
@@ -129,6 +130,7 @@ export const routes: Routes = [
   { path: 'formations-responsable', component: FormationResponsableComponent },
   { path: 'competences', component: CompetencesComponent },
   { path: 'employe-competences', component: EmployeCompetenceComponent },
-  { path: 'competences-poste', component: CompetencePosteComponent },
-  {path:'pdf/:dataq', component:PdfComponent}
+  {path:'pdf/:dataq', component:PdfComponent},
+  { path: 'reporting', component: ReportingComponent },
+  { path: 'dashboard', component: DashboardComponent },
 ];

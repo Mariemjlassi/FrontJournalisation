@@ -25,6 +25,7 @@ import { TabViewModule } from 'primeng/tabview';
 import { TimelineModule } from 'primeng/timeline';
 import { ProgressSpinnerModule } from 'primeng/progressspinner';
 import { DividerModule } from 'primeng/divider';
+import { TooltipModule } from 'primeng/tooltip';
 
 @Component({
   selector: 'app-utilisateur',
@@ -50,7 +51,8 @@ import { DividerModule } from 'primeng/divider';
     TabViewModule,
     TimelineModule,
     ProgressSpinnerModule,
-    DividerModule
+    DividerModule,
+    TooltipModule
 ],
   templateUrl: './utilisateur.component.html',
   styleUrl: './utilisateur.component.css',
@@ -138,36 +140,32 @@ export class UtilisateurComponent implements OnInit {
   }
 
   loadUsers(): void {
-    this.utilisateurService.getUtilisateurs().subscribe({
-      next: (data) => {
-        this.utilisateurs = data.map(user => {
-          let lastLogin: Date | null = null;
-          
-          if (user.lastLogin) {
-            lastLogin = typeof user.lastLogin === 'string' 
-              ? new Date(user.lastLogin) 
-              : user.lastLogin;
-          }
-          
-          return {
-            ...user,
-            lastLogin
-          };
-        });
-        console.log('Données transformées:', this.utilisateurs); // <-- Ajoutez ce log
-        this.filteredUsers = [...this.utilisateurs];
-        this.totalRecords = this.filteredUsers.length;
-      },
-      error: (err) => {
-        this.messageService.add({
-          severity: 'error',
-          summary: 'Erreur',
-          detail: 'Impossible de charger les utilisateurs',
-          life: 3000
-        });
-      }
-    });
-  }
+  this.utilisateurService.getUtilisateurs().subscribe({
+    next: (data) => {
+      this.utilisateurs = data.map(user => {
+        console.log('User from API:', user); // Ajoutez ce log pour vérification
+        
+        return {
+          ...user,
+          lastLogin: user.lastLogin ? new Date(user.lastLogin) : null,
+          accountLocked: user.accountLocked !== undefined ? user.accountLocked : false
+        };
+      });
+      
+      console.log('Utilisateurs après mapping:', this.utilisateurs); // Vérifiez les données
+      this.filteredUsers = [...this.utilisateurs];
+      this.totalRecords = this.filteredUsers.length;
+    },
+    error: (err) => {
+      this.messageService.add({
+        severity: 'error',
+        summary: 'Erreur',
+        detail: 'Impossible de charger les utilisateurs',
+        life: 3000
+      });
+    }
+  });
+}
   
   filterUsers(): void {
     let filtered = [...this.utilisateurs];
@@ -284,7 +282,8 @@ export class UtilisateurComponent implements OnInit {
       email: '',
       username: '',
       role: 'RH',
-      lastLogin: null
+      lastLogin: null,
+      accountLocked:false
     };
     this.editMode = false;
     this.displayDialog = true;
@@ -406,10 +405,174 @@ export class UtilisateurComponent implements OnInit {
       case 'Réinitialisation_MDP':
         return 'success'; // ✅ Remplace "help" par une valeur autorisée
       case 'Consultation':
-        return 'secondary'
+        return 'secondary';
+      case 'Création_Formation':
+        return 'info'
       default:
-        return 'info';
+        return 'warn';
     }
   }
+
+ /* lockAccount(userId: number, username: string): void {
+  this.confirmationService.confirm({
+    header: 'Confirmer le verrouillage',
+    message: `Voulez-vous vraiment verrouiller le compte de ${username} ?`,
+    icon: 'pi pi-lock',
+    acceptLabel: 'Oui, verrouiller',
+    rejectLabel: 'Annuler',
+    acceptButtonStyleClass: 'p-button-danger',
+    rejectButtonStyleClass: 'p-button-secondary',
+    accept: () => {
+      this.utilisateurService.lockAccount(userId).subscribe({
+        next: (response) => {
+          this.messageService.add({
+            severity: 'success',
+            summary: 'Succès',
+            detail: response.message || `Le compte de ${username} a été verrouillé.`,
+            life: 3000
+          });
+          this.loadUsers();
+        },
+        error: (err) => {
+          console.error('Erreur verrouillage:', err);
+          this.messageService.add({
+            severity: 'error',
+            summary: 'Erreur',
+            detail: err.error?.message || 'Impossible de verrouiller le compte',
+            life: 3000
+          });
+        }
+      });
+    }
+  });
+}
+
+unlockAccount(userId: number, username: string): void {
+  this.confirmationService.confirm({
+    header: 'Confirmer le déverrouillage',
+    message: `Voulez-vous vraiment déverrouiller le compte de ${username} ?`,
+    icon: 'pi pi-unlock',
+    acceptLabel: 'Oui, déverrouiller',
+    rejectLabel: 'Annuler',
+    acceptButtonStyleClass: 'p-button-secondary',
+    rejectButtonStyleClass: 'p-button-danger',
+    accept: () => {
+      this.utilisateurService.unlockAccount(userId).subscribe({
+        next: (response) => {
+          this.messageService.add({
+            severity: 'success',
+            summary: 'Succès',
+            detail: response.message || `Le compte de ${username} a été déverrouillé.`,
+            life: 3000
+          });
+          this.loadUsers();
+        },
+        error: (err) => {
+          console.error('Erreur déverrouillage:', err);
+          this.messageService.add({
+            severity: 'error',
+            summary: 'Erreur',
+            detail: err.error?.message || 'Impossible de déverrouiller le compte',
+            life: 3000
+          });
+        }
+      });
+    }
+  });
+}*/
+lockAccount(userId: number, username: string): void {
+  this.utilisateurService.lockAccount(userId).subscribe({
+    next: (response) => {
+      const user = this.utilisateurs.find(u => u.id === userId);
+      if (user) user.accountLocked = true;
+      
+      this.messageService.add({
+        severity: 'success',
+        summary: 'Succès',
+        detail: response.message || `Le compte de ${username} a été verrouillé.`,
+        life: 3000
+      });
+    },
+    error: (err) => {
+      console.error('Erreur verrouillage:', err);
+      this.messageService.add({
+        severity: 'error',
+        summary: 'Erreur',
+        detail: err.error?.message || 'Impossible de verrouiller le compte',
+        life: 3000
+      });
+    }
+  });
+}
+
+unlockAccount(userId: number, username: string): void {
+  this.utilisateurService.unlockAccount(userId).subscribe({
+    next: (response) => {
+      const user = this.utilisateurs.find(u => u.id === userId);
+      if (user) user.accountLocked = false;
+      
+      this.messageService.add({
+        severity: 'primary',
+        summary: 'Succès',
+        detail: response.message || `Le compte de ${username} a été déverrouillé.`,
+        life: 3000
+      });
+    },
+    error: (err) => {
+      console.error('Erreur déverrouillage:', err);
+      this.messageService.add({
+        severity: 'error',
+        summary: 'Erreur',
+        detail: err.error?.message || 'Impossible de déverrouiller le compte',
+        life: 3000
+      });
+    }
+  });
+}
+
+toggleLockState(utilisateur: Utilisateur): void {
+  if (utilisateur.role === 'ADMIN') {
+    this.messageService.add({
+      severity: 'warn',
+      summary: 'Action non autorisée',
+      detail: 'Vous ne pouvez pas modifier le statut d\'un compte administrateur',
+      life: 3000
+    });
+    return;
+  }
+
+  const action = utilisateur.accountLocked ? 'déverrouiller' : 'verrouiller';
   
+  this.confirmationService.confirm({
+    header: 'Confirmation',
+    message: `Voulez-vous vraiment ${action} le compte de ${utilisateur.nom} ?`,
+    icon: 'pi pi-exclamation-triangle',
+    acceptLabel: `Oui, ${action}`,
+    rejectLabel: 'Annuler',
+    acceptButtonStyleClass: 'p-button-' + (utilisateur.accountLocked ? 'success' : 'danger'),
+    rejectButtonStyleClass: 'p-button-secondary',
+    accept: () => {
+      if (utilisateur.accountLocked) {
+        this.utilisateurService.unlockAccount(utilisateur.id).subscribe({
+          next: () => {
+            this.loadUsers(); // Recharge complet après l'action
+          },
+          error: (err) => {
+            // Gestion erreur
+          }
+        });
+      } else {
+        this.utilisateurService.lockAccount(utilisateur.id).subscribe({
+          next: () => {
+            this.loadUsers(); // Recharge complet après l'action
+          },
+          error: (err) => {
+            // Gestion erreur
+          }
+        });
+      }
+    }
+  });
+}
+
 }

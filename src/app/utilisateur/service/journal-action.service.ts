@@ -17,4 +17,8 @@ export class JournalActionService {
   getActionsSinceLastLogin(userId: number): Observable<any[]> {
     return this.http.get<any[]>(`${this.apiUrl}/${userId}/journal-last-login`);
   }
+
+  getAllJournalActions():Observable<any[]>{
+    return this.http.get<any[]>(`${this.apiUrl}/journal/all`);
+  }
 }
